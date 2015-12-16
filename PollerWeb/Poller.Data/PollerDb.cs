@@ -8,7 +8,7 @@
     public class PollerDb : IdentityDbContext<ApplicationUser>
     {
         public PollerDb()
-            : base("PollerD", throwIfV1Schema: false)
+            : base("PollerDb", throwIfV1Schema: false)
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<PollerDb, Configuration>());
         }
