@@ -18,7 +18,7 @@
             this.polls = new HashSet<Poll>();
         }
 
-        public DateTime DeletedOn { get; set; }
+        public DateTime? DeletedOn { get; set; }
 
         public bool IsDeleted { get; set; }
 
