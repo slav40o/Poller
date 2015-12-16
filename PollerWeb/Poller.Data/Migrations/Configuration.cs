@@ -1,11 +1,11 @@
 namespace Poller.Data.Migrations
 {
-    using System;
-    using System.Data.Entity;
+    using Microsoft.AspNet.Identity;
+    using Models;
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Poller.Data.PollerDb>
+    internal sealed class Configuration : DbMigrationsConfiguration<PollerDb>
     {
         public Configuration()
         {
@@ -13,20 +13,14 @@ namespace Poller.Data.Migrations
             AutomaticMigrationDataLossAllowed = true;
         }
 
-        protected override void Seed(Poller.Data.PollerDb context)
+        protected override void Seed(PollerDb context)
         {
-            //  This method will be called after migrating to the latest version.
+            //var hasher = new PasswordHasher();
+            //var pass = hasher.HashPassword("123123");
+            //var user = new ApplicationUser { UserName = "slav@slav.pk", Email = "slav@slav.pk", PasswordHash = pass };
+            //context.Users.Add(user);
 
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
-            //  to avoid creating duplicate seed data. E.g.
-            //
-            //    context.People.AddOrUpdate(
-            //      p => p.FullName,
-            //      new Person { FullName = "Andrew Peters" },
-            //      new Person { FullName = "Brice Lambson" },
-            //      new Person { FullName = "Rowan Miller" }
-            //    );
-            //
+            //context.SaveChanges();
         }
     }
 }

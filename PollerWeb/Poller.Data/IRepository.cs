@@ -2,6 +2,7 @@ namespace Poller.Data
 {
     using Models;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public interface IRepository<T> where T : class, IEntity
     {
@@ -18,5 +19,9 @@ namespace Poller.Data
         void Delete(object id);
 
         void Detach(T entity);
+
+        int SaveChanges();
+
+        Task<int> SaveChangesAsync();
     }
 }

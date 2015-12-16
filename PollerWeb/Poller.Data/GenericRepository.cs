@@ -5,6 +5,7 @@ namespace Poller.Data
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public class GenericRepository<T> : IRepository<T>
         where T : class, IEntity
@@ -97,6 +98,11 @@ namespace Poller.Data
         public void Dispose()
         {
             this.Context.Dispose();
+        }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await this.Context.SaveChangesAsync();
         }
     }
 }
