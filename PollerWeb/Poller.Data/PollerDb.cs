@@ -23,5 +23,7 @@
         public IDbSet<PollQuestion> PollQuestions { get; set; }
 
         public IDbSet<PollAnswer> PollAnswers { get; set; }
+
+        public System.Data.Entity.DbSet<Poller.Models.ApplicationUser> ApplicationUsers { get; set; }
     }
 }
