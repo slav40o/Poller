@@ -24,7 +24,8 @@ namespace Poller.Web
                       "~/Scripts/respond.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
+                      "~/Content/bootstrap.min.css",
+                      "~/Content/side-bar-styles.css",
                       "~/Content/site.css"));
         }
     }

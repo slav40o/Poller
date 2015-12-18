@@ -1,23 +1,21 @@
 ﻿namespace Poller.Web.Controllers
 {
-    using Poller.Common.Managers;
-    using Poller.Data;
-    using Poller.Models;
+    using Common.Contracts;
     using System.Web.Mvc;
 
     public class PollController : Controller
     {
-        private PollManager manager;
+        private IPollManager pollManager;
 
-        public PollController()
+        public PollController(IPollManager manager)
         {
-            // Just for test at app harbor. Fix later with iOC container
-            manager = new PollManager(new GenericRepository<Poll>(new PollerDb()));
+            pollManager = manager;
         }
+
         // GET: Poll
         public ActionResult Index()
         {
-            var polls = manager.GetTopPolls();
+            var polls = pollManager.GetTopPolls();
             return View(polls);
         }
     }

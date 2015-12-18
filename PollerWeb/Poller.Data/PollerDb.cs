@@ -5,7 +5,7 @@
     using Migrations;
     using System.Data.Entity;
 
-    public class PollerDb : IdentityDbContext<ApplicationUser>
+    public class PollerDb : IdentityDbContext<ApplicationUser>, IPollerDb
     {
         public PollerDb()
             : base("PollerDb", throwIfV1Schema: false)
