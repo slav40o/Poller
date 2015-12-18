@@ -36,10 +36,29 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     <script>
-        $("#btn-toggle-side-menu").click(function (e) {
+        var menuBtn = $("#btn-toggle-side-menu"),
+            width = $(window).width();
+        if(width > 768){
+            menuBtn.toggleClass("toggled");
+        }
+
+        menuBtn.click(function (e) {
             e.preventDefault();
             $("#wrapper").toggleClass("toggled");
-            $(this).toggleClass("toggled");
+            menuBtn.toggleClass("toggled");
+        });
+
+        $(window).bind('resize', function (e) {
+            window.resizeEvt;
+            $(window).resize(function () {
+                clearTimeout(window.resizeEvt);
+                window.resizeEvt = setTimeout(function () {
+                    if (width < 768 && $(window).width() > 768) {
+                        menuBtn.toggleClass("toggled");
+                        width = $(window).width();
+                    } 
+                }, 250);
+            });
         });
     </script>
     @RenderSection("scripts", required: false)
