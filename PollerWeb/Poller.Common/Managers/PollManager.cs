@@ -56,56 +56,78 @@
             return await result.ToListAsync();
         }
 
-        public IEnumerable<PollSimpleViewModel> SearchByCreator(string creatorId, int page, int pageSize)
+        public PollListViewModel SearchByCreator(string creatorId, int page, int pageSize)
         {
-            var result = GetSearchQuery(new PollSearchParameteres
+            return ComplexSearch(new PollSearchParameteres
             {
-                CreatorId = creatorId
+                CreatorId = creatorId,
+                Order = GetDefaultOrder()
             }, page, pageSize);
-
-            return result.ToList();
         }
 
-        public async Task<IEnumerable<PollSimpleViewModel>> SearchByCreatorAsync(string creatorId, int page, int pageSize)
+        public async Task<PollListViewModel> SearchByCreatorAsync(string creatorId, int page, int pageSize)
         {
-            var result = GetSearchQuery(new PollSearchParameteres
+            return await ComplexSearchAsync(new PollSearchParameteres
             {
-                CreatorId = creatorId
+                CreatorId = creatorId,
+                Order = GetDefaultOrder()
             }, page, pageSize);
-
-            return await result.ToListAsync();
         }
 
-        public IEnumerable<PollSimpleViewModel> SearchByTitle(string title, int page, int pageSize, bool matchFull = false)
+        public PollListViewModel SearchByTitle(string title, int page, int pageSize, bool matchFull = false)
         {
-            var result = GetSearchQuery(new PollSearchParameteres
+            return ComplexSearch(new PollSearchParameteres
             {
                 Тitle = title,
-                MatchFullTitle = matchFull
+                MatchFullTitle = matchFull,
+                Order = GetDefaultOrder()
             }, page, pageSize);
-            return result.ToList();
         }
 
-        public async Task<IEnumerable<PollSimpleViewModel>> SearchByTitleAsync(string title, int page, int pageSize, bool matchFull = false)
+        public async Task<PollListViewModel> SearchByTitleAsync(string title, int page, int pageSize, bool matchFull = false)
         {
-            var result = GetSearchQuery(new PollSearchParameteres
+            return await ComplexSearchAsync(new PollSearchParameteres
             {
                 Тitle = title,
-                MatchFullTitle = matchFull
+                MatchFullTitle = matchFull,
+                Order = GetDefaultOrder()
             }, page, pageSize);
-            return await result.ToListAsync();
         }
 
-        public IEnumerable<PollSimpleViewModel> ComplexSearch(PollSearchParameteres search, int page, int pageSize)
+        public PollListViewModel ComplexSearch(PollSearchParameteres search, int page, int pageSize)
         {
-            var result = GetSearchQuery(search, page, pageSize);
-            return result.ToList();
+            int count;
+            var searchQuery = GetSearchQuery(search, out count);
+            var orderedQuery = GetOrderByQuery(searchQuery, search.Order);
+            var query = orderedQuery.Skip(page * pageSize).Take(pageSize);
+            var result = new PollListViewModel
+            {
+                CountPerPage = pageSize,
+                CurrentPage = page,
+                PagesCount = CalculatePagesCount(pageSize, count),
+                Polls = query.ToList(),
+                ResultCount = count
+            };
+
+            return result;
         }
 
-        public async Task<IEnumerable<PollSimpleViewModel>> ComplexSearchAsync(PollSearchParameteres search, int page, int pageSize)
+        public async Task<PollListViewModel> ComplexSearchAsync(PollSearchParameteres search, int page, int pageSize)
         {
-            var result = GetSearchQuery(search, page, pageSize);
-            return await result.ToListAsync();
+            int count;
+            var searchQuery = GetSearchQuery(search, out count);
+            var orderedQuery = GetOrderByQuery(searchQuery, search.Order);
+            var query = orderedQuery.Skip(page * pageSize).Take(pageSize);
+            var result = new PollListViewModel
+            {
+                CountPerPage = pageSize,
+                CurrentPage = page,
+                PagesCount = CalculatePagesCount(pageSize, count),
+                Polls = await query.ToListAsync(),
+                ResultCount = count
+            };
+
+            return result;
         }
 
         public PollViewModel GetFullPollInfo(Guid id)
@@ -116,7 +138,47 @@
             return pollModel;
         }
 
-        
+        private int CalculatePagesCount(int pageSize, int count)
+        {
+            int pageCount = count / pageSize;
+            if (count % pageSize > 0)
+            {
+                pageCount++;
+            }
+
+            return pageCount;
+        }
+
+
+        private IEnumerable<Tuple<PollOrderProperty, OrderType>> GetDefaultOrder()
+        {
+            return new List<Tuple<PollOrderProperty, OrderType>>()
+            {
+                new Tuple<PollOrderProperty, OrderType>(PollOrderProperty.Title, OrderType.Ascending),
+            };
+        }
+
+        private IOrderedQueryable<PollSimpleViewModel> GetOrderByQuery(
+            IQueryable<PollSimpleViewModel> searchQuery,
+            IEnumerable<Tuple<PollOrderProperty, OrderType>> order)
+        {
+            var query = searchQuery as IOrderedQueryable<PollSimpleViewModel>;
+            bool isFirstSet = false;
+            foreach (var orderPair in order)
+            {
+                if (isFirstSet)
+                {
+                    query = AddThenBy(query, orderPair);
+                }
+                else
+                {
+                    isFirstSet = true;
+                    query = AddOrderBy(query, orderPair);
+                }
+            }
+
+            return query;
+        }
 
         private IQueryable<PollSimpleViewModel> GetTopPollsQuery(int count = 10)
         {
@@ -127,7 +189,7 @@
                 .Take(count);
         }
 
-        private IQueryable<PollSimpleViewModel> GetSearchQuery(PollSearchParameteres search, int page, int pageSize)
+        private IQueryable<PollSimpleViewModel> GetSearchQuery(PollSearchParameteres search, out int count)
         {
             var result = polls.All().Select(PollSimpleViewModel.FromPoll);
             if (search.CreatorId != null)
@@ -159,7 +221,68 @@
             if (search.ToParticipiantsCount != null)
                 result = result.Where(p => p.ParticipientsCount <= search.ToParticipiantsCount);
 
-            return result.Skip(page * pageSize).Take(pageSize);
+            count = result.Count();
+            return result;
+        }
+        
+        private static IOrderedQueryable<PollSimpleViewModel> AddOrderBy(IOrderedQueryable<PollSimpleViewModel> query, Tuple<PollOrderProperty, OrderType> orderPair)
+        {
+            switch (orderPair.Item1)
+            {
+                case PollOrderProperty.CreatorName:
+                    query = orderPair.Item2 == OrderType.Ascending ?
+                        query.OrderBy(p => p.CreatorName) :
+                        query.OrderByDescending(p => p.CreatorName); break;
+                case PollOrderProperty.DateCreated:
+                    query = orderPair.Item2 == OrderType.Ascending ?
+                        query.OrderBy(p => p.DateCreated) :
+                        query.OrderByDescending(p => p.DateCreated); break;
+                case PollOrderProperty.ParticipientsCount:
+                    query = orderPair.Item2 == OrderType.Ascending ?
+                        query.OrderBy(p => p.ParticipientsCount) :
+                        query.OrderByDescending(p => p.ParticipientsCount); break;
+                case PollOrderProperty.QuestionsCount:
+                    query = orderPair.Item2 == OrderType.Ascending ?
+                        query.OrderBy(p => p.QuestionsCount) :
+                        query.OrderByDescending(p => p.QuestionsCount); break;
+                case PollOrderProperty.Title:
+                    query = orderPair.Item2 == OrderType.Ascending ?
+                        query.OrderBy(p => p.Title) :
+                        query.OrderByDescending(p => p.Title); break;
+                default: throw new ArgumentException("Unknown order parameter");
+            }
+
+            return query;
+        }
+
+        private static IOrderedQueryable<PollSimpleViewModel> AddThenBy(IOrderedQueryable<PollSimpleViewModel> query, Tuple<PollOrderProperty, OrderType> orderPair)
+        {
+            switch (orderPair.Item1)
+            {
+                case PollOrderProperty.CreatorName:
+                    query = orderPair.Item2 == OrderType.Ascending ?
+                        query.ThenBy(p => p.CreatorName) :
+                        query.ThenByDescending(p => p.CreatorName); break;
+                case PollOrderProperty.DateCreated:
+                    query = orderPair.Item2 == OrderType.Ascending ?
+                        query.ThenBy(p => p.DateCreated) :
+                        query.ThenByDescending(p => p.DateCreated); break;
+                case PollOrderProperty.ParticipientsCount:
+                    query = orderPair.Item2 == OrderType.Ascending ?
+                        query.ThenBy(p => p.ParticipientsCount) :
+                        query.ThenByDescending(p => p.ParticipientsCount); break;
+                case PollOrderProperty.QuestionsCount:
+                    query = orderPair.Item2 == OrderType.Ascending ?
+                        query.ThenBy(p => p.QuestionsCount) :
+                        query.ThenByDescending(p => p.QuestionsCount); break;
+                case PollOrderProperty.Title:
+                    query = orderPair.Item2 == OrderType.Ascending ?
+                        query.ThenBy(p => p.Title) :
+                        query.ThenByDescending(p => p.Title); break;
+                default: throw new ArgumentException("Unknown order parameter");
+            }
+
+            return query;
         }
     }
 }

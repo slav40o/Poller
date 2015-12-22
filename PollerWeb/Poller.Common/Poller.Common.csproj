@@ -89,10 +89,13 @@
     <Compile Include="Managers\ApplicationUserManager.cs" />
     <Compile Include="Contracts\IPollManager.cs" />
     <Compile Include="Managers\PollManager.cs" />
+    <Compile Include="PollOrderProperty.cs" />
+    <Compile Include="OrderType.cs" />
     <Compile Include="PollSearchParameteres.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\SmsService.cs" />
+    <Compile Include="ViewModels\PollListViewModel.cs" />
     <Compile Include="ViewModels\PollSimpleViewModel.cs" />
     <Compile Include="ViewModels\PollViewModel.cs" />
   </ItemGroup>
@@ -112,6 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Constants\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

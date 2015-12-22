@@ -15,7 +15,5 @@
         }
 
         public IEnumerable<PollQuestion> Questions { get; set; }
-
-        public int PageSize { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace Poller.Common
 {
     using System;
+    using System.Collections.Generic;
 
     public class PollSearchParameteres
     {
@@ -21,5 +22,7 @@
         public bool? IsPublic { get; set; }
 
         public string CreatorId { get; set; }
+
+        public IEnumerable<Tuple<PollOrderProperty, OrderType>> Order { get; set; }
     }
 }

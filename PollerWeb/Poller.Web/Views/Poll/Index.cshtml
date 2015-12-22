@@ -4,24 +4,22 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
-
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
 <table class="table table-striped table-striped">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.CreatorName)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.Title)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.CreatorName)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.DateCreated)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.ParticipientsCount)
@@ -34,22 +32,22 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayNameFor(model => model.CreatorName)
+            @Html.DisplayFor(model => item.Title)
         </td>
         <td>
-            @Html.DisplayNameFor(model => model.Title)
+            @Html.DisplayFor(model => item.CreatorName)
         </td>
         <td>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayFor(model => item.DateCreated)
         </td>
 <td>
-    @Html.DisplayNameFor(model => model.DateCreated)
+    @Html.DisplayFor(model => item.Description)
 </td>
         <td>
-            @Html.DisplayNameFor(model => model.ParticipientsCount)
+            @Html.DisplayFor(model => item.ParticipientsCount)
         </td>
         <td>
-            @Html.DisplayNameFor(model => model.QuestionsCount)
+            @Html.DisplayFor(model => item.QuestionsCount)
             </td>
 <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
