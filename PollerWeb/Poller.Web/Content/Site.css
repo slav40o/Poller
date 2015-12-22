@@ -21,3 +21,12 @@ textarea {
 a.navbar-brand {
     font-size: 2.5em;
 }
+
+ul{
+    list-style-type: none;
+}
+
+div, ul, p, li, h1{
+    margin: 0;
+    padding: 0;
+}

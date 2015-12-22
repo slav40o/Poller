@@ -44,6 +44,12 @@
         [Index]
         public int ParticipientsCount { get; set; }
 
+        [Required]
+        public int QuestionsCount { get; set; }
+
+        [Required]
+        public PollAnswerMode PollAnswerMode { get; set; }
+
         public virtual ICollection<PollQuestion> Questions
         {
             get { return questions; }

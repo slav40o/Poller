@@ -12,21 +12,24 @@
     <div id="wrapper">
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-                <li class="sidebar-brand">
-                    @Html.ActionLink("Poller", "Index", "Home")
-                </li>
-                <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                <li>@Html.ActionLink("Polls", "Index", "Poll")</li>
-                <li>@Html.ActionLink("Tests", "Index", "Test")</li>
-                <li>@Html.ActionLink("About", "About", "Home")</li>
-                <li>@Html.Partial("_LoginPartial")</li>
-            </ul>
+            <div class="sidebar-nav">
+                <div class="nav-menu-group">
+                    <div class="sidebar-brand menu-tile-large">
+                        @Html.ActionLink("Poller", "Index", "Home")
+                    </div>
+                    <div>@Html.ActionLink("Home", "Index", "Home")</div>
+                    <div>@Html.ActionLink("Polls", "Index", "Poll")</div>
+                    <div>@Html.ActionLink("Tests", "Index", "Test")</div>
+                    <div>@Html.ActionLink("About", "About", "Home")</div>
+                </div>
+                <div>@Html.Partial("_LoginPartial")</div>
+                    
+            </div>
         </div>
         <!-- /#sidebar-wrapper -->
         <!-- Page Content -->
         <div id="page-content-wrapper">
-            <a id="btn-toggle-side-menu" class="glyphicon glyphicon-menu-hamburger" aria-label="Menu"></a>
+            <a id="btn-toggle-side-menu" class="glyphicon glyphicon-menu-hamburger toggled" aria-label="Menu"></a>
             @RenderBody()
         </div>
         <!-- /#page-content-wrapper -->
@@ -38,7 +41,7 @@
     <script>
         var menuBtn = $("#btn-toggle-side-menu"),
             width = $(window).width();
-        if(width > 768){
+        if(width < 768){
             menuBtn.toggleClass("toggled");
         }
 

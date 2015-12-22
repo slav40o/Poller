@@ -1,14 +1,16 @@
-﻿using Poller.Common.Contracts;
-using Poller.Data;
-using Poller.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data.Entity;
-using System.Threading.Tasks;
-
-namespace Poller.Common.Managers
+﻿namespace Poller.Common.Managers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Data.Entity;
+    using System.Threading.Tasks;
+
+    using ViewModels;
+    using Contracts;
+    using Data;
+    using Models;
+
     public class PollManager : IPollManager
     {
         private IRepository<Poll> polls;
@@ -42,19 +44,19 @@ namespace Poller.Common.Managers
             return poll;
         }
 
-        public IEnumerable<Poll> GetTopPolls(int count = 10)
+        public IEnumerable<PollSimpleViewModel> GetTopPolls(int count = 10)
         {
             var result = GetTopPollsQuery(count);
             return result.ToList();
         }
 
-        public async Task<IEnumerable<Poll>> GetTopPollsAsync(int count = 10)
+        public async Task<IEnumerable<PollSimpleViewModel>> GetTopPollsAsync(int count = 10)
         {
             var result = GetTopPollsQuery(count);
             return await result.ToListAsync();
         }
 
-        public IEnumerable<Poll> SearchByCreator(string creatorId, int page, int pageSize)
+        public IEnumerable<PollSimpleViewModel> SearchByCreator(string creatorId, int page, int pageSize)
         {
             var result = GetSearchQuery(new PollSearchParameteres
             {
@@ -64,7 +66,7 @@ namespace Poller.Common.Managers
             return result.ToList();
         }
 
-        public async Task<IEnumerable<Poll>> SearchByCreatorAsync(string creatorId, int page, int pageSize)
+        public async Task<IEnumerable<PollSimpleViewModel>> SearchByCreatorAsync(string creatorId, int page, int pageSize)
         {
             var result = GetSearchQuery(new PollSearchParameteres
             {
@@ -74,7 +76,7 @@ namespace Poller.Common.Managers
             return await result.ToListAsync();
         }
 
-        public IEnumerable<Poll> SearchByTitle(string title, int page, int pageSize, bool matchFull = false)
+        public IEnumerable<PollSimpleViewModel> SearchByTitle(string title, int page, int pageSize, bool matchFull = false)
         {
             var result = GetSearchQuery(new PollSearchParameteres
             {
@@ -84,7 +86,7 @@ namespace Poller.Common.Managers
             return result.ToList();
         }
 
-        public async Task<IEnumerable<Poll>> SearchByTitleAsync(string title, int page, int pageSize, bool matchFull = false)
+        public async Task<IEnumerable<PollSimpleViewModel>> SearchByTitleAsync(string title, int page, int pageSize, bool matchFull = false)
         {
             var result = GetSearchQuery(new PollSearchParameteres
             {
@@ -94,29 +96,40 @@ namespace Poller.Common.Managers
             return await result.ToListAsync();
         }
 
-        public IEnumerable<Poll> ComplexSearch(PollSearchParameteres search, int page, int pageSize)
+        public IEnumerable<PollSimpleViewModel> ComplexSearch(PollSearchParameteres search, int page, int pageSize)
         {
             var result = GetSearchQuery(search, page, pageSize);
             return result.ToList();
         }
 
-        public async Task<IEnumerable<Poll>> ComplexSearchAsync(PollSearchParameteres search, int page, int pageSize)
+        public async Task<IEnumerable<PollSimpleViewModel>> ComplexSearchAsync(PollSearchParameteres search, int page, int pageSize)
         {
             var result = GetSearchQuery(search, page, pageSize);
             return await result.ToListAsync();
         }
 
-        private IQueryable<Poll> GetTopPollsQuery(int count = 10)
+        public PollViewModel GetFullPollInfo(Guid id)
+        {
+            var poll = polls.GetById(id);
+            var pollModel = new PollViewModel(poll);
+            pollModel.Questions = poll.Questions.ToList();
+            return pollModel;
+        }
+
+        
+
+        private IQueryable<PollSimpleViewModel> GetTopPollsQuery(int count = 10)
         {
             return polls.All()
+                .Select(PollSimpleViewModel.FromPoll)
                 .Where(p => p.IsActive == true && p.IsPublic == true)
                 .OrderBy(p => p.ParticipientsCount)
                 .Take(count);
         }
 
-        private IQueryable<Poll> GetSearchQuery(PollSearchParameteres search, int page, int pageSize)
+        private IQueryable<PollSimpleViewModel> GetSearchQuery(PollSearchParameteres search, int page, int pageSize)
         {
-            var result = polls.All();
+            var result = polls.All().Select(PollSimpleViewModel.FromPoll);
             if (search.CreatorId != null)
                 result = result.Where(p => p.CreatorId == search.CreatorId);
 

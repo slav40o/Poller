@@ -93,6 +93,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\SmsService.cs" />
+    <Compile Include="ViewModels\PollSimpleViewModel.cs" />
+    <Compile Include="ViewModels\PollViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Poller.Data\Poller.Data.csproj">
